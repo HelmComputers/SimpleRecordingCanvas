@@ -1,10 +1,11 @@
-//By Mijail
+//By Miguel Berrocal
 var canvasWidth = 700;
 var canvasHeight = 400;
 var clickX = new Array();
 var clickY = new Array();
 var clickDrag = new Array();
 var timeStamps = new Array();
+var timeouts = new Array();
 var fromDate;
 var toDate;
 var paint;
@@ -52,7 +53,7 @@ function handleStart(e) {
     primer = false;
   }
   paint = true;
-  addClick(mouseX, mouseY, false,Date.now());
+  addClick(mouseX, mouseY, false, Date.now());
   redraw();
 }
 
@@ -123,13 +124,23 @@ function startCountingTimeIfNeeded() {
 
 function reset() {
  clearInterval(intervalID);
+ if (timeouts) {
+  clearAllDrawingTimeOuts();
+}
  intervalID = null;
  clickX = new Array();
  clickY = new Array();
  clickDrag = new Array();
  timeStamps = new Array();
+ timeouts = new Array();
  isPlaying = false;
  primer = true;
+}
+
+function clearAllDrawingTimeOuts() {
+  for (var i=0; i<timeouts.length; i++) {
+    clearTimeout(timeouts[i]);
+  }
 }
 
 function addClick(x, y, dragging, timeStamp)
@@ -160,7 +171,8 @@ function redraw(){
 }
 
 function parche(i,diff) {
-  setTimeout(function() { drawLine(i);}, diff);
+ var drawLineTimeoutID = setTimeout(function() { drawLine(i);}, diff);
+ timeouts.push(drawLineTimeoutID);
 }
 
 function clear () {
