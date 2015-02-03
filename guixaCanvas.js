@@ -73,7 +73,7 @@ function handleTabletStart(e) {
 }
 
 function handleTabletMove(e) {
-  event.preventDefault();
+  e.preventDefault();
   handleMove(e.targetTouches[0]);
 }
 
