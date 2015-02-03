@@ -166,7 +166,7 @@ function clear () {
 function generateJSON() {
 var jsondata = "data=\'{\"clickX\": ["+clickX+"], \"clickY\": ["+clickY+"],\"timeStamps\": ["+timeStamps+"], \"clickDrag\": ["+clickDrag+"], \"fromDate\": "+fromDate+"}\'";
 var url = 'data:text/json;charset=utf8,' + encodeURIComponent(jsondata);
-window.open(url, '_blank');
+window.open(url, '_self');
 window.focus();
 }
 
