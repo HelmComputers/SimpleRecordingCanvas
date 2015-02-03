@@ -44,6 +44,7 @@ $( document ).ready(function() {
 
 function handleStart(e) {
   if (intervalID) reset(); //if autoplay
+  if (timeoutID) clearTimeout(timeoutID);
   var mouseX = e.pageX - canvas.offsetLeft;
   var mouseY = e.pageY - canvas.offsetTop;
   if (primer) {
