@@ -33,7 +33,6 @@ context = canvas.getContext("2d");
 
 
 $( document ).ready(function() {
-  console.log("asdfasdf");
   if (demo) initDemo();
   startAutoPlayback();
 });
@@ -41,41 +40,48 @@ $( document ).ready(function() {
 
 
 function handleStart(e) {
-  console.log("Start");
   if (intervalID) reset(); //if autoplay
-  var mouseX = e.pageX - this.offsetLeft;
-  var mouseY = e.pageY - this.offsetTop;
+  var mouseX = e.pageX - canvas.offsetLeft;
+  var mouseY = e.pageY - canvas.offsetTop;
   if (primer) {
     fromDate = Date.now();
     primer = false;
   }
   paint = true;
-  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, false,Date.now());
+  addClick(mouseX, mouseY, false,Date.now());
   redraw();
 }
 
 function handleMove(e) {
-    console.log("Move");
-
     if(paint){
     var date = Date.now();
-    addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true, date);
+    addClick(e.pageX - canvas.offsetLeft , e.pageY - canvas.offsetTop, true, date);
     redraw();
   }
 }
 
 function handleEnd(e) {
-      console.log("End");
-
-   paint = false;
-    console.log("mouseup");
-
+  paint = false;
   if (autoplay) startCountingTimeIfNeeded();
 }
 function handleLeave(e) {
-        console.log("Leave");
-
    paint = false;
+}
+
+function handleTabletStart(e) {
+  handleStart(e.targetTouches[0]);
+}
+
+function handleTabletMove(e) {
+  event.preventDefault();
+  handleMove(e.targetTouches[0]);
+}
+
+function handleTabletEnd(e) {
+  handleEnd(e.targetTouches[0]);
+}
+function handleTabletLeave(e) {
+  handleLeave(e.targetTouches[0]);
 }
 
 
@@ -85,18 +91,16 @@ $('#canvas').mouseup(handleEnd);
 $('#canvas').mouseleave(handleLeave);
 
 
-$('#canvas').addEventListener('touchstart',handleStart);
-$('#canvas').addEventListener('touchmove',handleMove);
-$('#canvas').addEventListener('touchend',handleEnd);
-$('#canvas').addEventListener('touchcancel',handleLeave);
+canvas.addEventListener('touchstart',handleTabletStart,false);
+canvas.addEventListener('touchmove',handleTabletMove,false);
+canvas.addEventListener('touchend',handleTabletEnd,false);
+canvas.addEventListener('touchcancel',handleTabletLeave,false);
 
 
 
 function startAutoPlayback() {
   if (!autoplay) return;
   duration = toDate-fromDate;
-
-
   play();
   intervalID = setInterval(play,duration+millisToWaitWhenFinished);
 }
@@ -113,7 +117,6 @@ function startCountingTimeIfNeeded() {
 
 
 function reset() {
-  console.log("reset");
  clearInterval(intervalID);
  intervalID = null;
  clickX = new Array();
