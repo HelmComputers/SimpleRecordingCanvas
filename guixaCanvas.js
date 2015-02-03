@@ -33,6 +33,7 @@ context = canvas.getContext("2d");
 
 
 $( document ).ready(function() {
+  console.log("asdfasdf");
   if (demo) initDemo();
   startAutoPlayback();
 });
@@ -43,7 +44,7 @@ $('#PlayButton').click(function(e){
 });
 
 
-$('#canvas').mousedown(function(e){
+function handleStart(e) {
   if (intervalID) reset(); //if autoplay
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
@@ -54,23 +55,43 @@ $('#canvas').mousedown(function(e){
   paint = true;
   addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, false,Date.now());
   redraw();
-});
+}
 
-$('#canvas').mousemove(function(e){
-  if(paint){
+function handleMove(e) {
+    if(paint){
     var date = Date.now();
     addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true, date);
     redraw();
   }
-});
+}
 
-$('#canvas').mouseup(function(e){
-  paint = false;
+function handleEnd(e) {
+   paint = false;
     console.log("mouseup");
 
   if (autoplay) startCountingTimeIfNeeded();
-});
+}
 
+
+$('#canvas').mousedown(handleStart);
+$('#canvas').mousemove(handleMove);
+$('#canvas').mouseup(handleEnd);
+
+$('#canvas').ontouchstart(handleStart);
+$('#canvas').ontouchmove(handleMove);
+$('#canvas').ontouchend(handleEnd);
+
+// $('#canvas').ontouchstart(function(e){
+//    handleStart(e);
+// });
+
+// $('#canvas').ontouchmove(function(e){
+//    handleMove(e);
+// });
+
+// $('#canvas').ontouchend(function(e){
+//  handleEnd(e);
+// });
 
 
 function startAutoPlayback() {
