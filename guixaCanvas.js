@@ -1,5 +1,5 @@
 //By Mijail
-var canvasWidth = 600;
+var canvasWidth = 700;
 var canvasHeight = 400;
 var clickX = new Array();
 var clickY = new Array();
@@ -25,6 +25,8 @@ canvas = document.createElement('canvas');
 canvas.setAttribute('width', canvasWidth);
 canvas.setAttribute('height', canvasHeight);
 canvas.setAttribute('id', 'canvas');
+canvas.setAttribute('style', 'background-color:#2d2d2d');
+
 canvasDiv.appendChild(canvas);
 if(typeof G_vmlCanvasManager != 'undefined') {
 	canvas = G_vmlCanvasManager.initElement(canvas);
@@ -35,6 +37,7 @@ context = canvas.getContext("2d");
 $( document ).ready(function() {
   if (demo) initDemo();
   startAutoPlayback();
+
 });
 
 
@@ -139,7 +142,7 @@ function addClick(x, y, dragging, timeStamp)
 
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
-  context.strokeStyle = "#df4b26";
+  context.strokeStyle = "#ffffff";
   context.lineJoin = "round";
   context.lineWidth = 5;
 			
