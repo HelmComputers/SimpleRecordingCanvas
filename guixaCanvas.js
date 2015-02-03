@@ -38,13 +38,10 @@ $( document ).ready(function() {
   startAutoPlayback();
 });
 
-$('#PlayButton').click(function(e){
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-  play();
-});
 
 
 function handleStart(e) {
+  console.log("Start");
   if (intervalID) reset(); //if autoplay
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
@@ -58,6 +55,8 @@ function handleStart(e) {
 }
 
 function handleMove(e) {
+    console.log("Move");
+
     if(paint){
     var date = Date.now();
     addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true, date);
@@ -66,32 +65,31 @@ function handleMove(e) {
 }
 
 function handleEnd(e) {
+      console.log("End");
+
    paint = false;
     console.log("mouseup");
 
   if (autoplay) startCountingTimeIfNeeded();
+}
+function handleLeave(e) {
+        console.log("Leave");
+
+   paint = false;
 }
 
 
 $('#canvas').mousedown(handleStart);
 $('#canvas').mousemove(handleMove);
 $('#canvas').mouseup(handleEnd);
+$('#canvas').mouseleave(handleLeave);
 
-$('#canvas').ontouchstart(handleStart);
-$('#canvas').ontouchmove(handleMove);
-$('#canvas').ontouchend(handleEnd);
 
-// $('#canvas').ontouchstart(function(e){
-//    handleStart(e);
-// });
+$('#canvas').addEventListener('touchstart',handleStart);
+$('#canvas').addEventListener('touchmove',handleMove);
+$('#canvas').addEventListener('touchend',handleEnd);
+$('#canvas').addEventListener('touchcancel',handleLeave);
 
-// $('#canvas').ontouchmove(function(e){
-//    handleMove(e);
-// });
-
-// $('#canvas').ontouchend(function(e){
-//  handleEnd(e);
-// });
 
 
 function startAutoPlayback() {
