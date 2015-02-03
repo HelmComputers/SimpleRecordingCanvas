@@ -69,6 +69,7 @@ function handleLeave(e) {
 }
 
 function handleTabletStart(e) {
+  e.preventDefault();
   handleStart(e.targetTouches[0]);
 }
 
