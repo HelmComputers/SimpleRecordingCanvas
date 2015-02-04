@@ -54,14 +54,14 @@ function handleStart(e) {
   }
   paint = true;
   addClick(mouseX, mouseY, false, Date.now());
-  redraw();
+  drawLastClick();
 }
 
 function handleMove(e) {
     if(paint){
     var date = Date.now();
     addClick(e.pageX - canvas.offsetLeft , e.pageY - canvas.offsetTop, true, date);
-    redraw();
+    drawLastClick();
   }
 }
 
@@ -69,6 +69,7 @@ function handleEnd(e) {
   paint = false;
   if (autoplay) startCountingTimeIfNeeded();
 }
+
 function handleLeave(e) {
    paint = false;
 }
@@ -126,7 +127,7 @@ function reset() {
  clearInterval(intervalID);
  if (timeouts) {
   clearAllDrawingTimeOuts();
-}
+ }
  intervalID = null;
  clickX = new Array();
  clickY = new Array();
@@ -135,6 +136,7 @@ function reset() {
  timeouts = new Array();
  isPlaying = false;
  primer = true;
+ clear();
 }
 
 function clearAllDrawingTimeOuts() {
@@ -149,7 +151,6 @@ function addClick(x, y, dragging, timeStamp)
   clickY.push(y);
   clickDrag.push(dragging);
   timeStamps.push(timeStamp);
-
 }
 
 function redraw(){
@@ -166,8 +167,16 @@ function redraw(){
         }
         else drawLine(i);
   }
-  if (isPlaying) isPlaying = false;
+  if (isPlaying)
+	  isPlaying = false;
+}
 
+function drawLastClick() {
+  context.strokeStyle = "#ffffff";
+  context.lineJoin = "round";
+  context.lineWidth = 5;
+  
+  drawLine(clickX.length - 1); 
 }
 
 function parche(i,diff) {
