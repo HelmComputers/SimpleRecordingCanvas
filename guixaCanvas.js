@@ -1,11 +1,13 @@
 //By Miguel Berrocal
 var canvasWidth = 700;
 var canvasHeight = 400;
-var clickX = new Array();
-var clickY = new Array();
-var clickDrag = new Array();
-var timeStamps = new Array();
-var timeouts = new Array();
+var clickX = [];
+var clickY = [];
+var clickDrag = [];
+var timeStamps = [];
+var timeouts = [];
+//var demos = new Array();
+var currentDemo = 0;
 var fromDate;
 var toDate;
 var paint;
@@ -36,15 +38,18 @@ context = canvas.getContext("2d");
 
 
 $( document ).ready(function() {
-  if (demo) initDemo();
-  startAutoPlayback();
-
+  if (demo) {
+    //initDemos();
+    loadDemo(currentDemo);
+    play();
+  }
+  //startAutoPlayback();
 });
 
 
 
 function handleStart(e) {
-  if (intervalID) reset(); //if autoplay
+  if (intervalID || demo) reset(); //if autoplay
   if (timeoutID) clearTimeout(timeoutID);
   var mouseX = e.pageX - canvas.offsetLeft;
   var mouseY = e.pageY - canvas.offsetTop;
@@ -109,7 +114,7 @@ function startAutoPlayback() {
   if (!autoplay) return;
   duration = toDate-fromDate;
   play();
-  intervalID = setInterval(play,duration+millisToWaitWhenFinished);
+  if (!demo) intervalID = setInterval(play,duration+millisToWaitWhenFinished);
 }
 
 
@@ -129,13 +134,15 @@ function reset() {
   clearAllDrawingTimeOuts();
  }
  intervalID = null;
- clickX = new Array();
- clickY = new Array();
- clickDrag = new Array();
- timeStamps = new Array();
- timeouts = new Array();
+ clickX = [];
+ clickY = [];
+ clickDrag = [];
+ timeStamps = [];
+ timeouts = [];
+ timeouts = [];
  isPlaying = false;
  primer = true;
+ demo = false;
  clear();
 }
 
@@ -152,13 +159,15 @@ function addClick(x, y, dragging, timeStamp)
   clickDrag.push(dragging);
   timeStamps.push(timeStamp);
 }
-
-function redraw(){
-  context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
+  function initStrokeStyle(){
   context.strokeStyle = "#ffffff";
   context.lineJoin = "round";
   context.lineWidth = 5;
-			
+  }
+
+function redraw(){
+  clear();
+  initStrokeStyle();
   for(var i=0; i < clickX.length; i++) {
         if (isPlaying) {
             difference = timeStamps[i] - fromDate;
@@ -167,16 +176,12 @@ function redraw(){
         }
         else drawLine(i);
   }
-  if (isPlaying)
-	  isPlaying = false;
+  if (isPlaying) isPlaying = false;
 }
 
 function drawLastClick() {
-  context.strokeStyle = "#ffffff";
-  context.lineJoin = "round";
-  context.lineWidth = 5;
-  
-  drawLine(clickX.length - 1); 
+ initStrokeStyle();
+  drawLine(clickX.length - 1);
 }
 
 function parche(i,diff) {
@@ -189,14 +194,19 @@ function clear () {
 }
 
 function generateJSON() {
-var jsondata = "data=\'{\"clickX\": ["+clickX+"], \"clickY\": ["+clickY+"],\"timeStamps\": ["+timeStamps+"], \"clickDrag\": ["+clickDrag+"], \"fromDate\": "+fromDate+"}\'";
+var jsondata = "demos.push(\'{\"clickX\": ["+clickX+"], \"clickY\": ["+clickY+"],\"timeStamps\": ["+timeStamps+"], \"clickDrag\": ["+clickDrag+"], \"fromDate\": "+fromDate+"}\');";
 var url = 'data:text/json;charset=utf8,' + encodeURIComponent(jsondata);
 window.open(url, '_self');
 window.focus();
 }
 
-function initDemo() {
-var mydata = JSON.parse(data);
+function initDemos() {
+  demos.push(demo1);
+  demos.push(demo2);
+}
+
+function loadDemo(i) {
+var mydata = JSON.parse(demos[i]);
 clickX = mydata["clickX"];
 clickY = mydata["clickY"];
 clickDrag = mydata["clickDrag"];
@@ -215,10 +225,24 @@ function drawLine (i) {
      context.lineTo(clickX[i], clickY[i]);
      context.closePath();
      context.stroke();
+     if (i == clickX.length-1 && demo) onPlayEnd();
 }
 
 function play() {
 difference = 0;
   isPlaying = true;
   redraw();
+}
+
+function playNextDemo() {
+  ++currentDemo;
+  loadDemo(currentDemo%demos.length);
+  play();
+}
+
+function onPlayEnd() {
+  if (demo) {
+    var playNextDemoTimeoutID = setTimeout(playNextDemo, millisToWaitWhenFinished);
+    timeouts.push(playNextDemoTimeoutID);
+  }
 }
